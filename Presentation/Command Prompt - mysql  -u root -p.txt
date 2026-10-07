@@ -1,0 +1,544 @@
+Microsoft Windows [Version 10.0.26300.9550]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\Harshitha>mysql -u root -p
+Enter password: ************
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 219
+Server version: 8.0.46 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2026, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> CREATE DATABASE CinemaDB;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> USE CinemaDB;
+Database changed
+mysql> CREATE TABLE Movie (
+    ->     movie_id INT PRIMARY KEY,
+    ->     title VARCHAR(100) NOT NULL,
+    ->     genre VARCHAR(50) NOT NULL,
+    ->     language VARCHAR(30) NOT NULL,
+    ->     duration INT NOT NULL,
+    ->     rating DECIMAL(2,1)
+    -> );
+Query OK, 0 rows affected (0.05 sec)
+
+mysql>
+mysql> CREATE TABLE Screen (
+    ->     screen_id INT PRIMARY KEY,
+    ->     screen_name VARCHAR(50) NOT NULL UNIQUE,
+    ->     capacity INT NOT NULL
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql>
+mysql> CREATE TABLE Customer (
+    ->     customer_id INT PRIMARY KEY,
+    ->     name VARCHAR(100) NOT NULL,
+    ->     phone VARCHAR(15) NOT NULL UNIQUE,
+    ->     email VARCHAR(100) NOT NULL UNIQUE
+    -> );
+Query OK, 0 rows affected (0.03 sec)
+
+mysql>
+mysql> CREATE TABLE Seat (
+    ->     seat_id INT PRIMARY KEY,
+    ->     screen_id INT NOT NULL,
+    ->     seat_number VARCHAR(10) NOT NULL,
+    ->     seat_type VARCHAR(20) NOT NULL,
+    ->     FOREIGN KEY (screen_id) REFERENCES Screen(screen_id),
+    ->     UNIQUE (screen_id, seat_number)
+    -> );
+Query OK, 0 rows affected (0.04 sec)
+
+mysql>
+mysql> CREATE TABLE Screening (
+    ->     screening_id INT PRIMARY KEY,
+    ->     movie_id INT NOT NULL,
+    ->     screen_id INT NOT NULL,
+    ->     show_date DATE NOT NULL,
+    ->     show_time TIME NOT NULL,
+    ->     FOREIGN KEY (movie_id) REFERENCES Movie(movie_id),
+    ->     FOREIGN KEY (screen_id) REFERENCES Screen(screen_id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql>
+mysql> CREATE TABLE Booking (
+    ->     booking_id INT PRIMARY KEY,
+    ->     customer_id INT NOT NULL,
+    ->     screening_id INT NOT NULL,
+    ->     seat_id INT NOT NULL,
+    ->     booking_date DATE NOT NULL,
+    ->     amount DECIMAL(10,2) NOT NULL,
+    ->     status VARCHAR(20) NOT NULL,
+    ->     FOREIGN KEY (customer_id) REFERENCES Customer(customer_id),
+    ->     FOREIGN KEY (screening_id) REFERENCES Screening(screening_id),
+    ->     FOREIGN KEY (seat_id) REFERENCES Seat(seat_id),
+    ->     UNIQUE (screening_id, seat_id)
+    -> );
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> INSERT INTO Movie VALUES
+    -> (1, 'Interstellar', 'Science Fiction', 'English', 169, 8.7),
+    -> (2, 'Inception', 'Science Fiction', 'English', 148, 8.8),
+    -> (3, 'RRR', 'Action', 'Telugu', 187, 8.0),
+    -> (4, 'Kalki 2898 AD', 'Science Fiction', 'Telugu', 181, 7.0),
+    -> (5, '3 Idiots', 'Comedy Drama', 'Hindi', 170, 8.4);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Screen VALUES
+    -> (1, 'Screen 1', 150),
+    -> (2, 'Screen 2', 120),
+    -> (3, 'Screen 3', 100),
+    -> (4, 'Screen 4', 180),
+    -> (5, 'Screen 5', 200);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Customer VALUES
+    -> (1, 'Aarav Sharma', '9876500001', 'aarav@gmail.com'),
+    -> (2, 'Ananya Reddy', '9876500002', 'ananya@gmail.com'),
+    -> (3, 'Rahul Kumar', '9876500003', 'rahul@gmail.com'),
+    -> (4, 'Sneha Patel', '9876500004', 'sneha@gmail.com'),
+    -> (5, 'Vikram Singh', '9876500005', 'vikram@gmail.com');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Seat VALUES
+    -> (1, 1, 'A1', 'Regular'),
+    -> (2, 1, 'A2', 'Regular'),
+    -> (3, 2, 'B1', 'Premium'),
+    -> (4, 2, 'B2', 'Premium'),
+    -> (5, 3, 'C1', 'Regular');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Screening VALUES
+    -> (1, 1, 1, '2026-10-08', '10:00:00'),
+    -> (2, 2, 2, '2026-10-08', '13:00:00'),
+    -> (3, 3, 3, '2026-10-08', '16:00:00'),
+    -> (4, 4, 1, '2026-10-09', '19:00:00'),
+    -> (5, 5, 2, '2026-10-09', '21:00:00');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> INSERT INTO Booking VALUES
+    -> (1, 1, 1, 1, '2026-10-06', 250.00, 'Confirmed'),
+    -> (2, 2, 2, 3, '2026-10-06', 300.00, 'Confirmed'),
+    -> (3, 3, 3, 5, '2026-10-06', 200.00, 'Confirmed'),
+    -> (4, 4, 4, 2, '2026-10-06', 250.00, 'Confirmed'),
+    -> (5, 5, 5, 4, '2026-10-06', 300.00, 'Confirmed');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SELECT * FROM Movie;
++----------+---------------+-----------------+----------+----------+--------+
+| movie_id | title         | genre           | language | duration | rating |
++----------+---------------+-----------------+----------+----------+--------+
+|        1 | Interstellar  | Science Fiction | English  |      169 |    8.7 |
+|        2 | Inception     | Science Fiction | English  |      148 |    8.8 |
+|        3 | RRR           | Action          | Telugu   |      187 |    8.0 |
+|        4 | Kalki 2898 AD | Science Fiction | Telugu   |      181 |    7.0 |
+|        5 | 3 Idiots      | Comedy Drama    | Hindi    |      170 |    8.4 |
++----------+---------------+-----------------+----------+----------+--------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> SELECT * FROM Screen;
++-----------+-------------+----------+
+| screen_id | screen_name | capacity |
++-----------+-------------+----------+
+|         1 | Screen 1    |      150 |
+|         2 | Screen 2    |      120 |
+|         3 | Screen 3    |      100 |
+|         4 | Screen 4    |      180 |
+|         5 | Screen 5    |      200 |
++-----------+-------------+----------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> SELECT * FROM Customer;
++-------------+--------------+------------+------------------+
+| customer_id | name         | phone      | email            |
++-------------+--------------+------------+------------------+
+|           1 | Aarav Sharma | 9876500001 | aarav@gmail.com  |
+|           2 | Ananya Reddy | 9876500002 | ananya@gmail.com |
+|           3 | Rahul Kumar  | 9876500003 | rahul@gmail.com  |
+|           4 | Sneha Patel  | 9876500004 | sneha@gmail.com  |
+|           5 | Vikram Singh | 9876500005 | vikram@gmail.com |
++-------------+--------------+------------+------------------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> SELECT * FROM Seat;
++---------+-----------+-------------+-----------+
+| seat_id | screen_id | seat_number | seat_type |
++---------+-----------+-------------+-----------+
+|       1 |         1 | A1          | Regular   |
+|       2 |         1 | A2          | Regular   |
+|       3 |         2 | B1          | Premium   |
+|       4 |         2 | B2          | Premium   |
+|       5 |         3 | C1          | Regular   |
++---------+-----------+-------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> SELECT * FROM Screening;
++--------------+----------+-----------+------------+-----------+
+| screening_id | movie_id | screen_id | show_date  | show_time |
++--------------+----------+-----------+------------+-----------+
+|            1 |        1 |         1 | 2026-10-08 | 10:00:00  |
+|            2 |        2 |         2 | 2026-10-08 | 13:00:00  |
+|            3 |        3 |         3 | 2026-10-08 | 16:00:00  |
+|            4 |        4 |         1 | 2026-10-09 | 19:00:00  |
+|            5 |        5 |         2 | 2026-10-09 | 21:00:00  |
++--------------+----------+-----------+------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql>
+mysql> SELECT * FROM Booking;
++------------+-------------+--------------+---------+--------------+--------+-----------+
+| booking_id | customer_id | screening_id | seat_id | booking_date | amount | status    |
++------------+-------------+--------------+---------+--------------+--------+-----------+
+|          1 |           1 |            1 |       1 | 2026-10-06   | 250.00 | Confirmed |
+|          2 |           2 |            2 |       3 | 2026-10-06   | 300.00 | Confirmed |
+|          3 |           3 |            3 |       5 | 2026-10-06   | 200.00 | Confirmed |
+|          4 |           4 |            4 |       2 | 2026-10-06   | 250.00 | Confirmed |
+|          5 |           5 |            5 |       4 | 2026-10-06   | 300.00 | Confirmed |
++------------+-------------+--------------+---------+--------------+--------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> DESCRIBE Movie;
++----------+--------------+------+-----+---------+-------+
+| Field    | Type         | Null | Key | Default | Extra |
++----------+--------------+------+-----+---------+-------+
+| movie_id | int          | NO   | PRI | NULL    |       |
+| title    | varchar(100) | NO   |     | NULL    |       |
+| genre    | varchar(50)  | NO   |     | NULL    |       |
+| language | varchar(30)  | NO   |     | NULL    |       |
+| duration | int          | NO   |     | NULL    |       |
+| rating   | decimal(2,1) | YES  |     | NULL    |       |
++----------+--------------+------+-----+---------+-------+
+6 rows in set (0.01 sec)
+
+mysql> DESCRIBE Screen;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| screen_id   | int         | NO   | PRI | NULL    |       |
+| screen_name | varchar(50) | NO   | UNI | NULL    |       |
+| capacity    | int         | NO   |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> DESCRIBE Customer;
++-------------+--------------+------+-----+---------+-------+
+| Field       | Type         | Null | Key | Default | Extra |
++-------------+--------------+------+-----+---------+-------+
+| customer_id | int          | NO   | PRI | NULL    |       |
+| name        | varchar(100) | NO   |     | NULL    |       |
+| phone       | varchar(15)  | NO   | UNI | NULL    |       |
+| email       | varchar(100) | NO   | UNI | NULL    |       |
++-------------+--------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> DESCRIBE Seat;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| seat_id     | int         | NO   | PRI | NULL    |       |
+| screen_id   | int         | NO   | MUL | NULL    |       |
+| seat_number | varchar(10) | NO   |     | NULL    |       |
+| seat_type   | varchar(20) | NO   |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> DESCRIBE Screening;
++--------------+------+------+-----+---------+-------+
+| Field        | Type | Null | Key | Default | Extra |
++--------------+------+------+-----+---------+-------+
+| screening_id | int  | NO   | PRI | NULL    |       |
+| movie_id     | int  | NO   | MUL | NULL    |       |
+| screen_id    | int  | NO   | MUL | NULL    |       |
+| show_date    | date | NO   |     | NULL    |       |
+| show_time    | time | NO   |     | NULL    |       |
++--------------+------+------+-----+---------+-------+
+5 rows in set (0.00 sec)
+
+mysql> DESCRIBE Booking;
++--------------+---------------+------+-----+---------+-------+
+| Field        | Type          | Null | Key | Default | Extra |
++--------------+---------------+------+-----+---------+-------+
+| booking_id   | int           | NO   | PRI | NULL    |       |
+| customer_id  | int           | NO   | MUL | NULL    |       |
+| screening_id | int           | NO   | MUL | NULL    |       |
+| seat_id      | int           | NO   | MUL | NULL    |       |
+| booking_date | date          | NO   |     | NULL    |       |
+| amount       | decimal(10,2) | NO   |     | NULL    |       |
+| status       | varchar(20)   | NO   |     | NULL    |       |
++--------------+---------------+------+-----+---------+-------+
+7 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     m.title,
+    ->     m.genre,
+    ->     s.show_date,
+    ->     s.show_time
+    -> FROM Movie m
+    -> JOIN Screening s
+    ->     ON m.movie_id = s.movie_id;
++---------------+-----------------+------------+-----------+
+| title         | genre           | show_date  | show_time |
++---------------+-----------------+------------+-----------+
+| Interstellar  | Science Fiction | 2026-10-08 | 10:00:00  |
+| Inception     | Science Fiction | 2026-10-08 | 13:00:00  |
+| RRR           | Action          | 2026-10-08 | 16:00:00  |
+| Kalki 2898 AD | Science Fiction | 2026-10-09 | 19:00:00  |
+| 3 Idiots      | Comedy Drama    | 2026-10-09 | 21:00:00  |
++---------------+-----------------+------------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     c.name AS customer_name,
+    ->     m.title AS movie,
+    ->     sc.screen_name,
+    ->     se.seat_number,
+    ->     b.booking_date,
+    ->     b.amount,
+    ->     b.status
+    -> FROM Booking b
+    -> JOIN Customer c
+    ->     ON b.customer_id = c.customer_id
+    -> JOIN Screening s
+    ->     ON b.screening_id = s.screening_id
+    -> JOIN Movie m
+    ->     ON s.movie_id = m.movie_id
+    -> JOIN Screen sc
+    ->     ON s.screen_id = sc.screen_id
+    -> JOIN Seat se
+    ->     ON b.seat_id = se.seat_id;
++---------------+---------------+-------------+-------------+--------------+--------+-----------+
+| customer_name | movie         | screen_name | seat_number | booking_date | amount | status    |
++---------------+---------------+-------------+-------------+--------------+--------+-----------+
+| Aarav Sharma  | Interstellar  | Screen 1    | A1          | 2026-10-06   | 250.00 | Confirmed |
+| Ananya Reddy  | Inception     | Screen 2    | B1          | 2026-10-06   | 300.00 | Confirmed |
+| Rahul Kumar   | RRR           | Screen 3    | C1          | 2026-10-06   | 200.00 | Confirmed |
+| Sneha Patel   | Kalki 2898 AD | Screen 1    | A2          | 2026-10-06   | 250.00 | Confirmed |
+| Vikram Singh  | 3 Idiots      | Screen 2    | B2          | 2026-10-06   | 300.00 | Confirmed |
++---------------+---------------+-------------+-------------+--------------+--------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     m.title,
+    ->     COUNT(b.booking_id) AS total_bookings
+    -> FROM Movie m
+    -> JOIN Screening s
+    ->     ON m.movie_id = s.movie_id
+    -> LEFT JOIN Booking b
+    ->     ON s.screening_id = b.screening_id
+    -> GROUP BY m.movie_id, m.title;
++---------------+----------------+
+| title         | total_bookings |
++---------------+----------------+
+| Interstellar  |              1 |
+| Inception     |              1 |
+| RRR           |              1 |
+| Kalki 2898 AD |              1 |
+| 3 Idiots      |              1 |
++---------------+----------------+
+5 rows in set (0.01 sec)
+
+mysql> SELECT
+    ->     m.title,
+    ->     COUNT(b.booking_id) AS total_bookings
+    -> FROM Movie m
+    -> JOIN Screening s
+    ->     ON m.movie_id = s.movie_id
+    -> LEFT JOIN Booking b
+    ->     ON s.screening_id = b.screening_id
+    -> GROUP BY m.movie_id, m.title;
++---------------+----------------+
+| title         | total_bookings |
++---------------+----------------+
+| Interstellar  |              1 |
+| Inception     |              1 |
+| RRR           |              1 |
+| Kalki 2898 AD |              1 |
+| 3 Idiots      |              1 |
++---------------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> ^BSELECT
+    ->     AVG(amount) AS average_ticket_price
+    -> FROM Booking;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'SELECT
+    AVG(amount) AS average_ticket_price
+FROM Booking' at line 1
+mysql> SELECT
+    ->     AVG(amount) AS average_ticket_price
+    -> FROM Booking;
++----------------------+
+| average_ticket_price |
++----------------------+
+|           260.000000 |
++----------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT
+    ->     MAX(amount) AS highest_ticket_price
+    -> FROM Booking;
++----------------------+
+| highest_ticket_price |
++----------------------+
+|               300.00 |
++----------------------+
+1 row in set (0.00 sec)
+
+mysql> SELECT
+    ->     c.name,
+    ->     c.email,
+    ->     b.amount,
+    ->     b.status
+    -> FROM Customer c
+    -> JOIN Booking b
+    ->     ON c.customer_id = b.customer_id;
++--------------+------------------+--------+-----------+
+| name         | email            | amount | status    |
++--------------+------------------+--------+-----------+
+| Aarav Sharma | aarav@gmail.com  | 250.00 | Confirmed |
+| Ananya Reddy | ananya@gmail.com | 300.00 | Confirmed |
+| Rahul Kumar  | rahul@gmail.com  | 200.00 | Confirmed |
+| Sneha Patel  | sneha@gmail.com  | 250.00 | Confirmed |
+| Vikram Singh | vikram@gmail.com | 300.00 | Confirmed |
++--------------+------------------+--------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     title,
+    ->     genre,
+    ->     rating
+    -> FROM Movie
+    -> WHERE rating > 8.0;
++--------------+-----------------+--------+
+| title        | genre           | rating |
++--------------+-----------------+--------+
+| Interstellar | Science Fiction |    8.7 |
+| Inception    | Science Fiction |    8.8 |
+| 3 Idiots     | Comedy Drama    |    8.4 |
++--------------+-----------------+--------+
+3 rows in set (0.00 sec)
+
+mysql> SELECT
+    ->     se.seat_number,
+    ->     se.seat_type,
+    ->     sc.screen_name
+    -> FROM Seat se
+    -> JOIN Screen sc
+    ->     ON se.screen_id = sc.screen_id
+    -> WHERE se.seat_type = 'Premium';
++-------------+-----------+-------------+
+| seat_number | seat_type | screen_name |
++-------------+-----------+-------------+
+| B1          | Premium   | Screen 2    |
+| B2          | Premium   | Screen 2    |
++-------------+-----------+-------------+
+2 rows in set (0.00 sec)
+
+mysql> SELECT *
+    -> FROM Booking
+    -> WHERE status = 'Confirmed';
++------------+-------------+--------------+---------+--------------+--------+-----------+
+| booking_id | customer_id | screening_id | seat_id | booking_date | amount | status    |
++------------+-------------+--------------+---------+--------------+--------+-----------+
+|          1 |           1 |            1 |       1 | 2026-10-06   | 250.00 | Confirmed |
+|          2 |           2 |            2 |       3 | 2026-10-06   | 300.00 | Confirmed |
+|          3 |           3 |            3 |       5 | 2026-10-06   | 200.00 | Confirmed |
+|          4 |           4 |            4 |       2 | 2026-10-06   | 250.00 | Confirmed |
+|          5 |           5 |            5 |       4 | 2026-10-06   | 300.00 | Confirmed |
++------------+-------------+--------------+---------+--------------+--------+-----------+
+5 rows in set (0.00 sec)
+
+mysql> INSERT INTO Customer
+    -> (customer_id, name, phone, email)
+    -> VALUES
+    -> (6, 'Harshitha Rani', '9876500006', 'harshitha@gmail.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT *
+    -> FROM Customer
+    -> WHERE customer_id = 6;
++-------------+----------------+------------+---------------------+
+| customer_id | name           | phone      | email               |
++-------------+----------------+------------+---------------------+
+|           6 | Harshitha Rani | 9876500006 | harshitha@gmail.com |
++-------------+----------------+------------+---------------------+
+1 row in set (0.00 sec)
+
+mysql> DELETE FROM Customer
+    -> WHERE customer_id = 6;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT *
+    -> FROM Customer
+    -> WHERE customer_id = 6;
+Empty set (0.00 sec)
+
+mysql> SELECT 'Movie' AS Table_Name, COUNT(*) AS Total_Records
+    -> FROM Movie
+    ->
+    -> UNION ALL
+    ->
+    -> SELECT 'Screen', COUNT(*)
+    -> FROM Screen
+    ->
+    -> UNION ALL
+    ->
+    -> SELECT 'Customer', COUNT(*)
+    -> FROM Customer
+    ->
+    -> UNION ALL
+    ->
+    -> SELECT 'Seat', COUNT(*)
+    -> FROM Seat
+    ->
+    -> UNION ALL
+    ->
+    -> SELECT 'Screening', COUNT(*)
+    -> FROM Screening
+    ->
+    -> UNION ALL
+    ->
+    -> SELECT 'Booking', COUNT(*)
+    -> FROM Booking;
++------------+---------------+
+| Table_Name | Total_Records |
++------------+---------------+
+| Movie      |             5 |
+| Screen     |             5 |
+| Customer   |             5 |
+| Seat       |             5 |
+| Screening  |             5 |
+| Booking    |             5 |
++------------+---------------+
+6 rows in set (0.01 sec)
+
+mysql> SELECT SUM(amount) AS total_revenue
+    -> FROM Booking
+    -> WHERE status = 'Confirmed';
++---------------+
+| total_revenue |
++---------------+
+|       1300.00 |
++---------------+
+1 row in set (0.00 sec)
+
+mysql>
